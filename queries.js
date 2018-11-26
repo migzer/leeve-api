@@ -33,7 +33,8 @@ function getAllUsers(req, res, next) {
     });
 }
 
-function getUser() {
+function getUser(req, res, next) {
+    res.status(200).send('ok');
 }
 
 function createUser(req, res, next) {
@@ -53,12 +54,32 @@ function createUser(req, res, next) {
         });
 }
 
-function updateUser() {
-
+function updateUser(req, res, next) {
+    db.none("UPDATE users SET uid = ${uid}, firstName = ${firstName}, visitedCountries = ${visitedCountries}, blockUsers = ${blockedUsers}, birthday = ${birthday}, gender = ${gender}, description = ${description}, latitude = ${latitude}, longitude = ${longitude}, avatarUrl = ${avatarUrl}, learnedLanguages = ${learnedLanguages}, nativeLanguages = ${nativeLanguages}, desiredLanguages = ${desiredLanguages}, hobbyList = ${hobbyList}, notificationToken = ${notificationToken}, createdAt = ${createdAt}, email = ${email}, distanceFromUser = ${distanceFromUser}, inviteCode = ${inviteCode}, status = ${status}, inviteLeeves = ${inviteLeeves}, statusFilter = ${statusFilter}, notifsMsgs = ${notifsMsgs}, notifsLeeves = ${notifsLeeves}, bannedReason = ${bannedReason}, cardUsersChangedAt = ${cardUsersChangedAt}, cardUsers = ${cardUsers}, mapUsers = ${mapUsers}, passedLeever = ${passedLeever}, requests = ${requests}, leevers = ${leevers} WHERE users.uid LIKE '" + req.body.uid + "'", req.body).then(() => {
+        res.status(200).json({
+            status: 'success',
+            message: 'user updated !'
+        });
+    }).catch((err) => {
+        console.error(err);
+        return next(err);
+    });
 }
 
-function removeUser() {
+function removeUser(req, res, next) {
+    const uids = req.url.split('/');
+    const uid = uids[uids.length - 1];
 
+    console.log(uid);
+    db.none("DELETE FROM users WHERE users.uid LIKE '" + uid + "'").then(() => {
+        res.status(200).json({
+            status: 'success',
+            message: 'user deleted !'
+        });
+    }).catch((err) => {
+        console.error(err);
+        return next(err);
+    });
 }
 
 module.exports = {
