@@ -82,9 +82,31 @@ function removeUser(req, res, next) {
     });
 }
 
+function getCardUsers(req, res, next) {
+    const uids = req.url.split('/');
+    const uid = uids[uids.length - 1];
+
+    console.log(uid);
+    db.any("SELECT users.cardUsers FROM users WHERE users.uid LIKE '" + uid + "'").then((data) => {
+        console.log(data);
+        res.status(200).json({
+            status: 'success',
+            message: 'send card users !'
+        });
+    }).catch((err) => {
+        console.error(err);
+        return next(err);
+    });
+}
+
+function getMapUsers(req, res, next) {
+}
+
 module.exports = {
     getAllUsers: getAllUsers,
     getUser: getUser,
+    getCardUsers: getCardUsers,
+    getMapUsers: getMapUsers,
     createUser: createUser,
     updateUser: updateUser,
     removeUser: removeUser
