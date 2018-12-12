@@ -87,19 +87,14 @@ function getCardUsers(req, res, next) {
     const uid = uids[uids.length - 1];
 
     console.log(uid);
-    db.any("SELECT users.cardUsers, users.latitude, users.longitude FROM users WHERE users.uid LIKE '" + uid + "'").then((data) => {
+    db.any("SELECT users.cardUsers FROM users WHERE users.uid LIKE '" + uid + "'").then((data) => {
         let query = "SELECT * FROM users WHERE users.uid ~* '";
-        let geoPoint = {
-            latitude: parseFloat(data[0].latitude),
-            longitude: parseFloat(data[0].longitude),
-        };
 
-
-        for (let index = 0; index < data[0].cardusers.length; index++) {
+	for (let index = 0; index < data[0].cardusers.length; index++) {
 	    query += data[0].cardusers[index];
 	    query += (index + 1 == data[0].cardusers.length) ? '' : '|';
 	}
-	query += "' ORDER BY earth_distance(ll_to_earth(" + geoPoint.latitude + ", " + geoPoint.longitude + "), ll_to_earth(users.latitude, users.longitude)) ASC;";
+	query += "'";
 	db.any(query).then((users) => {
 	    res.status(200).json({
 		status: 'success',
