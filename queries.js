@@ -88,11 +88,23 @@ function getCardUsers(req, res, next) {
 
     console.log(uid);
     db.any("SELECT users.cardUsers FROM users WHERE users.uid LIKE '" + uid + "'").then((data) => {
-        console.log(data);
-        res.status(200).json({
-            status: 'success',
-            message: 'send card users !'
-        });
+        let query = "SELECT * FROM users WHERE users.uid ~* '";
+
+	for (let index = 0; index < data[0].cardusers.length; index++) {
+	    query += data[0].cardusers[index];
+	    query += (index + 1 == data[0].cardusers.length) ? '' : '|';
+	}
+	query += "'";
+	db.any(query).then((users) => {
+	    res.status(200).json({
+		status: 'success',
+		message: 'send card users !',
+		data: users
+	    });
+	}).catch((err) => {
+	    console.error(err);
+	    return next(err);
+	});
     }).catch((err) => {
         console.error(err);
         return next(err);
@@ -100,8 +112,32 @@ function getCardUsers(req, res, next) {
 }
 
 function getMapUsers(req, res, next) {
-    res.status(200).send();
-    //return next();
+    const uids = req.url.split('/');
+    const uid = uids[uids.length - 1];
+
+    console.log(uid);
+    db.any("SELECT users.mapUsers FROM users WHERE users.uid LIKE '" + uid + "'").then((data) => {
+        let query = "SELECT * FROM users WHERE users.uid ~* '";
+
+        for (let index = 0; index < data[0].mapusers.length; index++) {
+            query += data[0].mapusers[index];
+            query += (index + 1 == data[0].mapusers.length) ? '' : '|';
+        }
+        query += "'";
+        db.any(query).then((users) => {
+            res.status(200).json({
+                status: 'success',
+                message: 'send map users !',
+                data: users
+            });
+        }).catch((err) => {
+            console.error(err);
+            return next(err);
+        });
+    }).catch((err) => {
+        console.error(err);
+        return next(err);
+    });
 }
 
 module.exports = {
