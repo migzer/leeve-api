@@ -99,7 +99,7 @@ function getCardUsers(req, res, next) {
 	    query += data[0].cardusers[index];
 	    query += (index + 1 == data[0].cardusers.length) ? '' : '|';
 	}
-	query += "' ORDER BY earth_distance(ll_to_earth(" + geoPoint.latitude + ", " + geoPoint.longitude + "), ll_to_earth(users.latitude, users.longitude)) ASC;', geoPoint";
+	query += "' ORDER BY earth_distance(ll_to_earth(" + geoPoint.latitude + ", " + geoPoint.longitude + "), ll_to_earth(users.latitude, users.longitude)) ASC;";
 	db.any(query).then((users) => {
 	    res.status(200).json({
 		status: 'success',
