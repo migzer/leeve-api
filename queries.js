@@ -90,6 +90,15 @@ function getCardUsers(req, res, next) {
     db.any("SELECT users.cardUsers FROM users WHERE users.uid LIKE '" + uid + "'").then((data) => {
         let query = "SELECT * FROM users WHERE users.uid ~* '";
 
+	if (!data[0].cardusers.length) {
+	    console.warn("no card users");
+	    res.status(200).json({
+		status: 'success',
+		message: 'send card users but empty..!',
+		data: []
+	    });
+	    return;
+	}
 	for (let index = 0; index < data[0].cardusers.length; index++) {
 	    query += data[0].cardusers[index];
 	    query += (index + 1 == data[0].cardusers.length) ? '' : '|';
@@ -119,6 +128,15 @@ function getMapUsers(req, res, next) {
     db.any("SELECT users.mapUsers FROM users WHERE users.uid LIKE '" + uid + "'").then((data) => {
         let query = "SELECT * FROM users WHERE users.uid ~* '";
 
+	if (!data[0].mapusers.length) {
+            console.warn("no map users");
+            res.status(200).json({
+                status: 'success',
+                message: 'send map users but empty..!',
+                data: []
+            });
+            return;
+        }
         for (let index = 0; index < data[0].mapusers.length; index++) {
             query += data[0].mapusers[index];
             query += (index + 1 == data[0].mapusers.length) ? '' : '|';
