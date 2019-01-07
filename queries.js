@@ -34,7 +34,21 @@ function getAllUsers(req, res, next) {
 }
 
 function getUser(req, res, next) {
-    res.status(200).send('ok');
+    const uids = req.url.split('/');
+    const uid = uids[uids.length - 1];
+
+    db.any("SELECT * FROM users users.uid LIKE '" + uid + "'")
+        .then((user) => {
+            res.status(200).json({
+                status: 'success',
+                message: 'get user !',
+                data: user
+            });
+        })
+        .catch((err) => {
+            console.error(err);
+            return next(err);
+        });
 }
 
 function createUser(req, res, next) {
