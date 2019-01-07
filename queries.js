@@ -159,9 +159,9 @@ function getMapUsers(req, res, next) {
 }
 
 function getAllConversations(req, res, next) {
-    const uid = req.body.uid;
+    const userUid = req.body.uid;
 
-    db.any("SELECT * FROM chatconversations WHERE '" + uid + "' IN members")
+    db.any("SELECT * FROM chatconversations WHERE members @> ARRAY['" + userUid + "']::varchar[];")
         .then((conversations) => {
             res.status(200).json({
                 status: 'success',
