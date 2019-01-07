@@ -158,6 +158,35 @@ function getMapUsers(req, res, next) {
     });
 }
 
+function getAllConversations(req, res, next) {
+}
+
+function getConversation(req, res, next) {
+}
+
+function createConversation(req, res, next) {
+    let conversation = req.body;
+
+    db.none('INSERT INTO chatconversations(uid, seenBy, members, timestamp, lastMessage) ' +
+        'values(${uid}, ${seenBy}, ${members}, ${timestamp}, ${lastMessage})', conversation)
+        .then(() => {
+            res.status(200).json({
+                status: 'success',
+                message: 'conversation created !'
+            });
+        })
+        .catch((err) => {
+            console.error(err);
+            return next(err);
+        });
+}
+
+function updateConversation(req, res, next) {
+}
+
+function removeConversation(req, res, next) {
+}
+
 module.exports = {
     getAllUsers: getAllUsers,
     getUser: getUser,
@@ -165,5 +194,10 @@ module.exports = {
     getMapUsers: getMapUsers,
     createUser: createUser,
     updateUser: updateUser,
-    removeUser: removeUser
+    removeUser: removeUser,
+    getAllConversations: getAllConversations,
+    getConversation: getConversation,
+    createConversation: createConversation,
+    updateConversation: updateConversation,
+    removeConversation: removeConversation
 };
