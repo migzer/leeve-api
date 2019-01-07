@@ -37,7 +37,7 @@ function getUser(req, res, next) {
     const uids = req.url.split('/');
     const uid = uids[uids.length - 1];
 
-    db.any("SELECT * FROM users users.uid LIKE '" + uid + "'")
+    db.any("SELECT * FROM users WHERE users.uid LIKE '" + uid + "'")
         .then((user) => {
             res.status(200).json({
                 status: 'success',
