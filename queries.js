@@ -90,30 +90,30 @@ function getCardUsers(req, res, next) {
     db.any("SELECT users.cardUsers FROM users WHERE users.uid LIKE '" + uid + "'").then((data) => {
         let query = "SELECT * FROM users WHERE users.uid ~* '";
 
-	if (!data[0].cardusers.length) {
-	    console.warn("no card users");
-	    res.status(200).json({
-		status: 'success',
-		message: 'send card users but empty..!',
-		data: []
-	    });
-	    return;
-	}
-	for (let index = 0; index < data[0].cardusers.length; index++) {
-	    query += data[0].cardusers[index];
-	    query += (index + 1 == data[0].cardusers.length) ? '' : '|';
-	}
-	query += "'";
-	db.any(query).then((users) => {
-	    res.status(200).json({
-		status: 'success',
-		message: 'send card users !',
-		data: users
-	    });
-	}).catch((err) => {
-	    console.error(err);
-	    return next(err);
-	});
+        if (!data[0].cardusers.length) {
+            console.warn("no card users");
+            res.status(200).json({
+                status: 'success',
+                message: 'send card users but empty..!',
+                data: []
+            });
+            return;
+        }
+        for (let index = 0; index < data[0].cardusers.length; index++) {
+            query += data[0].cardusers[index];
+            query += (index + 1 == data[0].cardusers.length) ? '' : '|';
+        }
+        query += "'";
+        db.any(query).then((users) => {
+            res.status(200).json({
+                status: 'success',
+                message: 'send card users !',
+                data: users
+            });
+        }).catch((err) => {
+            console.error(err);
+            return next(err);
+        });
     }).catch((err) => {
         console.error(err);
         return next(err);
@@ -128,7 +128,7 @@ function getMapUsers(req, res, next) {
     db.any("SELECT users.mapUsers FROM users WHERE users.uid LIKE '" + uid + "'").then((data) => {
         let query = "SELECT * FROM users WHERE users.uid ~* '";
 
-	if (!data[0].mapusers.length) {
+        if (!data[0].mapusers.length) {
             console.warn("no map users");
             res.status(200).json({
                 status: 'success',
@@ -159,6 +159,20 @@ function getMapUsers(req, res, next) {
 }
 
 function getAllConversations(req, res, next) {
+    const uid = req.body.uid;
+
+    db.any("SELECT * FROM chatconversations WHERE '" + uid + "' IN members")
+        .then((conversations) => {
+            res.status(200).json({
+                status: 'success',
+                message: 'send conversations !',
+                data: conversations
+            });
+        })
+        .catch((err) => {
+            console.error(err);
+            return next(err);
+        });
 }
 
 function getConversation(req, res, next) {
