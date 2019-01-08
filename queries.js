@@ -190,6 +190,21 @@ function getAllConversations(req, res, next) {
 }
 
 function getConversation(req, res, next) {
+    const uids = req.url.split('/');
+    const uid = uids[uids.length - 1];
+
+    db.any("SELECT * FROM chatconversations WHERE chatconversations.uid LIKE '" + uid + "'")
+        .then((conversation) => {
+            res.status(200).json({
+                status: 'success',
+                message: 'get conversation !',
+                data: conversation
+            });
+        })
+        .catch((err) => {
+            console.error(err);
+            return next(err);
+        });
 }
 
 function createConversation(req, res, next) {
