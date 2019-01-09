@@ -42,7 +42,7 @@ function getUser(req, res, next) {
             res.status(200).json({
                 status: 'success',
                 message: 'get user !',
-                data: user
+                data: user[0]
             });
         })
         .catch((err) => {
@@ -175,7 +175,7 @@ function getMapUsers(req, res, next) {
 function getAllConversations(req, res, next) {
     const userUid = req.body.uid;
 
-    db.any("SELECT * FROM chatconversations WHERE members @> ARRAY['" + userUid + "']::varchar[];")
+    db.any("SELECT * FROM chatconversations WHERE members @> ARRAY['" + userUid + "']::varchar[] ORDER BY chatconversations.timestamp DESC;")
         .then((conversations) => {
             res.status(200).json({
                 status: 'success',
