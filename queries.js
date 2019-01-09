@@ -198,7 +198,7 @@ function getConversation(req, res, next) {
             res.status(200).json({
                 status: 'success',
                 message: 'get conversation !',
-                data: conversation
+                data: conversation[0]
             });
         })
         .catch((err) => {
@@ -225,9 +225,31 @@ function createConversation(req, res, next) {
 }
 
 function updateConversation(req, res, next) {
+    db.none("UPDATE chatconversations SET uid = ${uid}, seenBy = ${seenBy}, members = ${members}, timestamp = ${timestamp}, lastMessage = ${lastMessage} WHERE chatconversations.uid LIKE '" + req.body.uid + "'", req.body).then(() => {
+        res.status(200).json({
+            status: 'success',
+            message: 'conversation updated !'
+        });
+    }).catch((err) => {
+        console.error(err);
+        return next(err);
+    });
 }
 
 function removeConversation(req, res, next) {
+    const uids = req.url.split('/');
+    const uid = uids[uids.length - 1];
+
+    console.log(uid);
+    db.none("DELETE FROM chatconversations WHERE chatconversations.uid LIKE '" + uid + "'").then(() => {
+        res.status(200).json({
+            status: 'success',
+            message: 'conversation deleted !'
+        });
+    }).catch((err) => {
+        console.error(err);
+        return next(err);
+    });
 }
 
 module.exports = {
