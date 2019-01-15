@@ -233,8 +233,8 @@ function createConversation(req, res, next) {
 function updateConversation(req, res, next) {
     db.none("INSERT INTO chatconversations(uid, seenBy, members, timestamp, lastMessage) " +
         "values(${uid}, ${seenBy}, ${members}, ${timestamp}, ${lastMessage}) " +
-        "ON CONFLICT (chatconversations.uid)" +
-        "DO UPDATE chatconversations SET uid = ${uid}, seenBy = ${seenBy}, members = ${members}, timestamp = ${timestamp}, lastMessage = ${lastMessage} WHERE chatconversations.uid LIKE '" + req.body.uid + "'", req.body).then(() => {
+        "ON CONFLICT (uid)" +
+        "DO UPDATE SET uid = ${uid}, seenBy = ${seenBy}, members = ${members}, timestamp = ${timestamp}, lastMessage = ${lastMessage} WHERE chatconversations.uid LIKE '" + req.body.uid + "'", req.body).then(() => {
         res.status(200).json({
             status: 'success',
             message: 'conversation updated !'
