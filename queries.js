@@ -210,18 +210,33 @@ function getConversation(req, res, next) {
 function createConversation(req, res, next) {
     let conversation = req.body;
 
-    db.none('INSERT INTO chatconversations(uid, seenBy, members, timestamp, lastMessage) ' +
-        'values(${uid}, ${seenBy}, ${members}, ${timestamp}, ${lastMessage})', conversation)
-        .then(() => {
-            res.status(200).json({
-                status: 'success',
-                message: 'conversation created !'
+    if (conversation.uid && conversation.lastMessage) {
+        db.none('INSERT INTO chatconversations(uid, seenBy, members, timestamp, lastMessage) ' +
+            'values(${uid}, ${seenBy}, ${members}, ${timestamp}, ${lastMessage})', conversation)
+            .then(() => {
+                res.status(200).json({
+                    status: 'success',
+                    message: 'conversation created !'
+                });
+            })
+            .catch((err) => {
+                console.error(err);
+                return next(err);
             });
-        })
-        .catch((err) => {
-            console.error(err);
-            return next(err);
-        });
+    } else {
+        db.none('INSERT INTO chatconversations(seenBy, members, timestamp) ' +
+            'values(${seenBy}, ${members}, ${timestamp})', conversation)
+            .then(() => {
+                res.status(200).json({
+                    status: 'success',
+                    message: 'conversation created !'
+                });
+            })
+            .catch((err) => {
+                console.error(err);
+                return next(err);
+            });
+    }
 }
 
 function updateConversation(req, res, next) {
