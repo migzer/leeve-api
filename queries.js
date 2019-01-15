@@ -212,6 +212,8 @@ function createConversation(req, res, next) {
 }
 
 function updateConversation(req, res, next) {
+    const conversation = req.body;
+    
     db.none('REPLACE INTO chatconversations(uid, seenBy, members, timestamp, lastMessage) ' +
         'values(${uid}, ${seenBy}, ${members}, ${timestamp}, ${lastMessage})', conversation)
         .then(() => {
