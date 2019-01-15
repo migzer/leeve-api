@@ -208,24 +208,39 @@ function getConversation(req, res, next) {
 }
 
 function createConversation(req, res, next) {
-    return updateConversation(req, res, next);
+    let conversation = req.body;
+
+    if (conversation.uid && conversation.lastMessage) {
+        db.none('REPLACE INTO chatconversations(uid, seenBy, members, timestamp, lastMessage) ' +
+            'values(${uid}, ${seenBy}, ${members}, ${timestamp}, ${lastMessage})', conversation)
+            .then(() => {
+                res.status(200).json({
+                    status: 'success',
+                    message: 'conversation created !'
+                });
+            })
+            .catch((err) => {
+                console.error(err);
+                return next(err);
+            });
+    } else {
+        const err = "no uid yet !";
+        console.error(err);
+        return next(err);
+    }
 }
 
 function updateConversation(req, res, next) {
-    const conversation = req.body;
-    
     db.none('REPLACE INTO chatconversations(uid, seenBy, members, timestamp, lastMessage) ' +
-        'values(${uid}, ${seenBy}, ${members}, ${timestamp}, ${lastMessage})', conversation)
-        .then(() => {
-            res.status(200).json({
-                status: 'success',
-                message: 'conversation created/updated !'
-            });
-        })
-        .catch((err) => {
-            console.error(err);
-            return next(err);
+        'values(${uid}, ${seenBy}, ${members}, ${timestamp}, ${lastMessage})', req.body).then(() => {
+        res.status(200).json({
+            status: 'success',
+            message: 'conversation updated !'
         });
+    }).catch((err) => {
+        console.error(err);
+        return next(err);
+    });
 }
 
 function removeConversation(req, res, next) {
