@@ -261,6 +261,89 @@ function removeConversation(req, res, next) {
     });
 }
 
+function getMessagesByConversation(req, res, next) {
+    let conversationUid = req.body.conversationUid;
+
+    db.any("SELECT * FROM chatmessages WHERE chatmessages.conversationuid LIKE '" + conversationUid + "'")
+        .then((messages) => {
+            res.status(200).json({
+                status: 'success',
+                message: 'related conv messages sended !',
+                data: messages
+            });
+        })
+        .catch((err) => {
+            console.error(err);
+            return next(err);
+        })
+}
+
+function getMessage(req, res, next) {
+    let message = req.body;
+
+    db.none("SELECT * FROM chatmessages WHERE chatmessages.uid LIKE '" + message.uid + "'", message)
+        .then(() => {
+            res.status(200).json({
+                status: 'success',
+                message: 'message sended !'
+            });
+        })
+        .catch((err) => {
+            console.error(err);
+            return next(err);
+        });
+}
+
+function createMessage(req, res, next) {
+    let message = req.body;
+
+    db.none("INSERT INTO chatmessages(uid, conversationuid, sender, timestamp, reactions, text) " +
+        "values(${uid}, ${conversationUid}, ${sender}, ${timestamp}, ${reactions}, ${text});", message)
+        .then(() => {
+            res.status(200).json({
+                status: 'success',
+                message: 'message created !'
+            });
+        })
+        .catch((err) => {
+            console.error(err);
+            return next(err);
+        });
+}
+
+function updateMessage(req, res, next) {
+    let message = req.body;
+
+    db.none("UPDATE SET uid = ${uid}, conversationuid = ${conversationUid}, sender = ${sender}, timestamp = ${timestamp}, reactions = ${reactions}, text = ${text} WHERE chatmessages.uid LIKE '" + message.uid + "'", message)
+        .then(() => {
+            res.status(200).json({
+                status: 'success',
+                message: 'message created !'
+            });
+        })
+        .catch((err) => {
+            console.error(err);
+            return next(err);
+        });
+}
+
+function removeMessage(req, res, next) {
+    const uids = req.url.split('/');
+    const uid = uids[uids.length - 1];
+
+    db.none("DELETE FROM chatmessages WHERE chatmessages.uid LIKE '" + uid +"';")
+        .then(() => {
+            res.status(200).json({
+                status: 'success',
+                message: 'message deleted !'
+            });
+        })
+        .catch((err) => {
+            console.error(err);
+            return next(err);
+        })
+}
+
 module.exports = {
     getAllUsers: getAllUsers,
     getUser: getUser,
@@ -273,5 +356,10 @@ module.exports = {
     getConversation: getConversation,
     createConversation: createConversation,
     updateConversation: updateConversation,
-    removeConversation: removeConversation
+    removeConversation: removeConversation,
+    getMessagesByConversation: getMessagesByConversation,
+    getMessage: getMessage,
+    createMessage: createMessage,
+    updateMessage: updateMessage,
+    removeMessage: removeMessage
 };

@@ -17,4 +17,10 @@ router.post('/api/chat-conversation/:uid', db.createConversation);
 router.put('/api/chat-conversation/:uid', db.updateConversation);
 router.delete('/api/chat-conversation/:uid', db.removeConversation);
 
+router.post('/api/chat-messages/', db.getMessagesByConversation);
+router.get('/api/chat-message/:uid', db.getMessage);
+router.post('/api/chat-message/:uid', db.createMessage);
+router.put('/api/chat-message/:uid', db.updateMessage);
+router.delete('/api/chat-message/:uid', db.removeMessage);
+
 module.exports = router;
