@@ -299,7 +299,7 @@ function createMessage(req, res, next) {
 
     if (message.uid) {
         db.none("INSERT INTO chatmessages(uid, conversationuid, sender, timestamp, reactions, text) " +
-            "values(${uid}, ${conversationUid}, ${sender}, ${timestamp}, ${reactions}, ${text});", message)
+            "values(${uid}, ${conversationUid}, ${from}, ${timestamp}, ${reactions}, ${text});", message)
             .then(() => {
                 res.status(200).json({
                     status: 'success',
@@ -322,7 +322,7 @@ function updateMessage(req, res, next) {
     let message = req.body;
 
     db.none("INSERT INTO chatmessages(uid, conversationuid, sender, timestamp, reactions, text) " +
-        "values(${uid}, ${conversationUid}, ${sender}, ${timestamp}, ${reactions}, ${text}) " +
+        "values(${uid}, ${conversationUid}, ${from}, ${timestamp}, ${reactions}, ${text}) " +
         "ON CONFLICT (uid)" +
         "DO UPDATE SET uid = ${uid}, conversationuid = ${conversationUid}, sender = ${sender}, timestamp = ${timestamp}, reactions = ${reactions}, text = ${text} WHERE chatmessages.uid LIKE '" + message.uid + "'", message)
         .then(() => {
