@@ -297,24 +297,34 @@ function getMessage(req, res, next) {
 function createMessage(req, res, next) {
     let message = req.body;
 
-    db.none("INSERT INTO chatmessages(uid, conversationuid, sender, timestamp, reactions, text) " +
-        "values(${uid}, ${conversationUid}, ${sender}, ${timestamp}, ${reactions}, ${text});", message)
-        .then(() => {
-            res.status(200).json({
-                status: 'success',
-                message: 'message created !'
+    if (message.uid) {
+        db.none("INSERT INTO chatmessages(uid, conversationuid, sender, timestamp, reactions, text) " +
+            "values(${uid}, ${conversationUid}, ${sender}, ${timestamp}, ${reactions}, ${text});", message)
+            .then(() => {
+                res.status(200).json({
+                    status: 'success',
+                    message: 'message created !'
+                });
+            })
+            .catch((err) => {
+                console.error(err);
+                return next(err);
             });
-        })
-        .catch((err) => {
-            console.error(err);
-            return next(err);
-        });
+    } else {
+        const err = "no uid yet !";
+        console.error(err);
+        return next(err);
+    }
+
 }
 
 function updateMessage(req, res, next) {
     let message = req.body;
 
-    db.none("UPDATE SET uid = ${uid}, conversationuid = ${conversationUid}, sender = ${sender}, timestamp = ${timestamp}, reactions = ${reactions}, text = ${text} WHERE chatmessages.uid LIKE '" + message.uid + "'", message)
+    db.none("INSERT INTO chatmessages(uid, conversationuid, sender, timestamp, reactions, text) " +
+        "values(${uid}, ${conversationUid}, ${sender}, ${timestamp}, ${reactions}, ${text}) " +
+        "ON CONFLICT (uid)" +
+        "DO UPDATE SET uid = ${uid}, conversationuid = ${conversationUid}, sender = ${sender}, timestamp = ${timestamp}, reactions = ${reactions}, text = ${text} WHERE chatmessages.uid LIKE '" + message.uid + "'", message)
         .then(() => {
             res.status(200).json({
                 status: 'success',
@@ -331,7 +341,7 @@ function removeMessage(req, res, next) {
     const uids = req.url.split('/');
     const uid = uids[uids.length - 1];
 
-    db.none("DELETE FROM chatmessages WHERE chatmessages.uid LIKE '" + uid +"';")
+    db.none("DELETE FROM chatmessages WHERE chatmessages.uid LIKE '" + uid + "';")
         .then(() => {
             res.status(200).json({
                 status: 'success',
