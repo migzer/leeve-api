@@ -175,7 +175,7 @@ function getMapUsers(req, res, next) {
 function getAllConversations(req, res, next) {
     const userUid = req.body.uid;
 
-    db.any("SELECT * FROM chatconversations WHERE members @> ARRAY['" + userUid + "']::varchar[] ORDER BY chatconversations.timestamp DESC;")
+    db.any("SELECT chatconversations.uid AS \"conversationUid\", chatconversations.seenby, chatconversations.members, chatconversations.timestamp, chatconversations.lastmessage, users.uid AS \"userUid\", users.firstname, users.birthday, users.visitedcountries, users.blockusers, users.gender, users.description, users.latitude, users.longitude, users.avatarurl, users.learnedlanguages, users.nativelanguages, users.desiredlanguages, users.hobbylist, users.notificationtoken, users.createdat, users.email, users.distancefromuser, users.invitecode, users.status, users.inviteleeves, users.statusfilter, users.notifsmsgs, users.notifsleeves, users.bannedreason, users.carduserschangedat, users.cardusers, users.passedleever, users.requests, users.leevers FROM chatconversations LEFT JOIN users ON users.uid = CASE WHEN chatconversations.members[1] = '" + userUid + "' THEN chatconversations.members[2] ELSE chatconversations.members[1] END WHERE members @> ARRAY['" + userUid + "']::varchar[] ORDER BY chatconversations.timestamp DESC;")
         .then((conversations) => {
             res.status(200).json({
                 status: 'success',
