@@ -264,7 +264,7 @@ function removeConversation(req, res, next) {
 function getMessagesByConversation(req, res, next) {
     let conversationUid = req.body.conversationUid;
 
-    db.any("SELECT * FROM chatmessages WHERE chatmessages.conversationuid LIKE '" + conversationUid + "'")
+    db.any("SELECT * FROM chatmessages WHERE chatmessages.conversationuid LIKE '" + conversationUid + "' ORDER BY chatmessages.timestamp ASC;")
         .then((messages) => {
             res.status(200).json({
                 status: 'success',
