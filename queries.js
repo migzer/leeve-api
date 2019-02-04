@@ -279,14 +279,23 @@ function getMessagesByConversation(req, res, next) {
 }
 
 function getMessage(req, res, next) {
-    let message = req.body;
+    const uids = req.url.split('/');
+    const uid = uids[uids.length - 1];
 
-    db.none("SELECT * FROM chatmessages WHERE chatmessages.uid LIKE '" + message.uid + "'", message)
-        .then(() => {
-            res.status(200).json({
-                status: 'success',
-                message: 'message sended !'
-            });
+    db.any("SELECT * FROM chatmessages WHERE chatmessages.uid LIKE '" + uid + "'")
+        .then((msg) => {
+	    if (msg) {
+                res.status(200).json({
+                    status: 'success',
+                    message: 'message sended !',
+		    data: msg[0]
+                });
+	    } else {
+		res.status(202).json({
+		    status: 'success',
+		    message: 'message does not exist'
+		});
+	    }
         })
         .catch((err) => {
             console.error(err);
